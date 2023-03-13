@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn import metrics
-import numpy as np
 
 
 def main():
@@ -44,16 +43,16 @@ def main():
     y_pred_test = mlr.predict(
         x_test
     )  # predict the quality of the wine for the testing data
-    MAE = metrics.mean_absolute_error(
+    MAE_train = metrics.mean_absolute_error(
         y_train, y_pred
     )  # calculate the mean absolute error
-    MAPE = metrics.mean_absolute_percentage_error(
+    MAPE_train = metrics.mean_absolute_percentage_error(
         y_train, y_pred
     )  # calculate the mean absolute percentage error
-    RMSE = metrics.mean_squared_error(
+    RMSE_train = metrics.mean_squared_error(
         y_train, y_pred, squared=False
     )  # calculate the root mean squared error
-    R2 = metrics.r2_score(y_train, y_pred)  # calculate the R2 score
+    R2_train = metrics.r2_score(y_train, y_pred)  # calculate the R2 score
     MAE_test = metrics.mean_absolute_error(
         y_test, y_pred_test
     )  # calculate the mean absolute error for the testing data
@@ -70,7 +69,7 @@ def main():
     # save the results in a dataframe
     MLR_results = pd.DataFrame(
         {
-            "Training Data": [MAE, MAPE, RMSE, R2],
+            "Training Data": [MAE_train, MAPE_train, RMSE_train, R2_train],
             "Testing Data": [MAE_test, MAPE_test, RMSE_test, R2_test],
         },
         index=[
@@ -108,11 +107,6 @@ def main():
     # in most of the cases the model starts to overfit at the degree of 4, so we will use the degree of 4
     # but rarely it improves the model at the degree of 5
 
-    # calculate the best degree
-    diff_li = (np.array(MAE_li_test) - np.array(MAE_li_tren)).tolist()
-    best_degree = diff_li.index(min(diff_li))
-    print(best_degree)
-
     poly = PolynomialFeatures(degree=4)
     x_poly = poly.fit_transform(x_train)
     x_poly_test = poly.transform(x_test)
@@ -122,7 +116,7 @@ def main():
     MAE_train = metrics.mean_absolute_error(y_train, y_pred)
     MAE_test = metrics.mean_absolute_error(y_test, y_pred_test)
     MAPE_train = metrics.mean_absolute_percentage_error(y_train, y_pred)
-    MAEPE_test = metrics.mean_absolute_percentage_error(y_test, y_pred_test)
+    MAPE_test = metrics.mean_absolute_percentage_error(y_test, y_pred_test)
     RMSE_train = metrics.mean_squared_error(y_train, y_pred, squared=False)
     RMSE_test = metrics.mean_squared_error(y_test, y_pred_test, squared=False)
     R2_train = metrics.r2_score(y_train, y_pred)
@@ -131,7 +125,7 @@ def main():
     R2_test = metrics.r2_score(y_test, poly_model.predict(poly.fit_transform(x_test)))
     PR_results = pd.DataFrame(
         {
-            "Training Data": [MAE, MAPE, RMSE, R2],
+            "Training Data": [MAE_train, MAPE_train, RMSE_train, R2_train],
             "Testing Data": [MAE_test, MAPE_test, RMSE_test, R2_test],
         },
         index=[
@@ -141,6 +135,9 @@ def main():
             "R2",
         ],
     )
+    
+    print(MLR_results)
+    print(PR_results)
 
 
 if __name__ == "__main__":
