@@ -9,6 +9,7 @@ if (rstudioapi::isAvailable()) {
 library(data.table)
 library(caret) # http://topepo.github.io/caret/available-models.html
 library(plotly)
+install.packages("ranger") 
 library(ranger) # the fastest and better random forest implementation
 library(fastAdaboost) # Adaboost
 library(xgboost) # Extreme Gradient boosting
@@ -124,7 +125,7 @@ test_x <- test[,!"stroke"]
 test_y <- test[,stroke]
 training[,.N,stroke]
 test[,.N,stroke]
-
+training_x
 # Ranger -----------------------------------------------------------------------
 ## Raw data ----
 # we can try without oversampling
@@ -136,7 +137,8 @@ confusionMatrix(data = rf.orig$predictions, reference = training_y,
 # results on test set
 my_pred <- predict(object = rf.orig, data = test_x)
 confusionMatrix(data = my_pred$predictions, reference = test_y, positive = "Yes", mode = "prec_recall")
-
+# what is the accuracy?
+mean(my_pred$predictions == test_y)
 ## Rebalancing ----------------------------------------------------------------
 # Oversampling or undersampling
 # training.rose <- ovun.sample(stroke ~ ., data = training,

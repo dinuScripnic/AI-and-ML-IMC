@@ -86,17 +86,17 @@ def main():
     MAE_li_test = list()
     budget = 7
     for i in range(budget):
-        poly = PolynomialFeatures(degree=i)
-        x_poly_train = poly.fit_transform(x_train)
-        x_poly_test = poly.transform(x_test)
-        model = LinearRegression()
-        model.fit(x_poly_train, y_train)
-        y_poly_train = model.predict(x_poly_train)
-        y_poly_test = model.predict(x_poly_test)
-        MAE_train = metrics.mean_absolute_error(y_train, y_poly_train)
-        MAE_test = metrics.mean_absolute_error(y_test, y_poly_test)
-        MAE_li_tren.append(MAE_train)
-        MAE_li_test.append(MAE_test)
+        poly = PolynomialFeatures(degree=i)  # create the polynomial features
+        x_poly_train = poly.fit_transform(x_train)  # fit the polynomial features to the training data
+        x_poly_test = poly.transform(x_test)  # transform the polynomial features to the testing data
+        model = LinearRegression()  # create the Linear Regression model
+        model.fit(x_poly_train, y_train)  # fit the model to the training data
+        y_poly_train = model.predict(x_poly_train)  # predict the quality of the wine
+        y_poly_test = model.predict(x_poly_test)  # predict the quality of the wine for the testing data
+        MAE_train = metrics.mean_absolute_error(y_train, y_poly_train)  # calculate the mean absolute error
+        MAE_test = metrics.mean_absolute_error(y_test, y_poly_test)  # calculate the mean absolute error for the testing data
+        MAE_li_tren.append(MAE_train)  # append the mean absolute error to the list
+        MAE_li_test.append(MAE_test)  # append the mean absolute error to the list
 
     plt.scatter(x=range(budget), y=MAE_li_tren, linewidths=2, color="blue")
     plt.plot(range(budget), MAE_li_tren, color="blue")
