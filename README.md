@@ -538,6 +538,7 @@ y_pred <- predict(model, X_test)
 * Based on concept of neighborhood
 * Classify a sample based on its neighbors
 * K is the number of nearest neighbors to be considered
+* does not take any assumptions about the data
 
 #### Use cases
 * Used for classification and regression problems
@@ -554,12 +555,24 @@ y_pred <- predict(model, X_test)
 * Cannot work very well with categorical features, because it will make the categorical features more important than the numerical features
     * The numeric variables will also be encoded in variables in the range of 0 to 1, which will make the distance between the points smaller
 ##### Manhattan Distance
+* sum of the absolute differences of their x and y coordinates
+* used when features are of different scales
+* more resistant to outliers
+* d = |x1 - x2| + |y1 - y2|
 ##### Chebyshev Distance
+* measures the distance between two points based on the variable that has greater difference
+* robust to outliers and noise
+* can be sensitive to scaling and normalization
+* d = max(|x1 - x2|, |y1 - y2|)
 ##### Mainkowski Distance
 * Generealized distance metric (Euclidean, Manhattan, Chebyshev)
-
+* usefull when we give more improtance to some features
+* d = (|x1 - x2|^p + |y1 - y2|^p)^(1/p)
+* p is important
 ##### Cosine Similarity
 * It measures only different orientaions but not the difference in magnitude
+* cosine similarity ranges from -1 to 1
+* when dealing with hifh dimensional data
 * 1 - cosine similarity = cosine dissimilarity
 * Not very proper distance metrics but can be useful in kNN
 ##### Jacard Index (Tanimoto coefficient)
@@ -570,7 +583,13 @@ y_pred <- predict(model, X_test)
 * Only for binary features
 * The number of symbols that differ between two strings
 #### Advantages
+* easy to implement and understand
+* flexible and can work with any number of inputs
+* both binary and multi-class classification and regression problems
 #### Disadvantages
+* computationally expensive
+* choice of K is very important
+* sensitive to choice of distance metric
 >NOTE: Always take n_neighbors as an odd number, but if the best value is 1, discard it
 #### Python Implementation
 ```python   

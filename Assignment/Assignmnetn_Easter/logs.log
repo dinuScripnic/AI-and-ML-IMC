@@ -6279,3 +6279,61 @@ THIS IS A JOBLIB ISSUE. If you can, kindly provide the joblib's team with an
 2023-03-31 19:23:30,604:INFO:Preloading libraries
 2023-03-31 19:23:30,609:INFO:Set up data.
 2023-03-31 19:23:30,625:INFO:Set up index.
+2023-03-31 19:30:38,866:INFO:Initializing save_model()
+2023-03-31 19:30:38,866:INFO:save_model(model=KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+                     metric_params=None, n_jobs=-1, n_neighbors=12, p=2,
+                     weights='distance'), model_name=best_model, prep_pipe_=Pipeline(memory=FastMemory(location=C:\Users\scrip\AppData\Local\Temp\joblib),
+         steps=[('label_encoding',
+                 TransformerWrapperWithInverse(exclude=None, include=None,
+                                               transformer=LabelEncoder())),
+                ('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['0', '1', '2', '3', '4', '5', '6',
+                                             '7', '8', '9', '10', '11', '12',
+                                             '14', '15'],
+                                    transformer=SimpleImputer(add_indi...
+                                                              copy=True,
+                                                              fill_value=None,
+                                                              keep_empty_features=False,
+                                                              missing_values=nan,
+                                                              strategy='mean',
+                                                              verbose='deprecated'))),
+                ('categorical_imputer',
+                 TransformerWrapper(exclude=None, include=[],
+                                    transformer=SimpleImputer(add_indicator=False,
+                                                              copy=True,
+                                                              fill_value=None,
+                                                              keep_empty_features=False,
+                                                              missing_values=nan,
+                                                              strategy='most_frequent',
+                                                              verbose='deprecated')))],
+         verbose=False), verbose=True, use_case=MLUsecase.CLASSIFICATION, kwargs={})
+2023-03-31 19:30:38,867:INFO:Adding model into prep_pipe
+2023-03-31 19:30:38,878:INFO:best_model.pkl saved in current working directory
+2023-03-31 19:30:38,892:INFO:Pipeline(memory=FastMemory(location=C:\Users\scrip\AppData\Local\Temp\joblib),
+         steps=[('label_encoding',
+                 TransformerWrapperWithInverse(exclude=None, include=None,
+                                               transformer=LabelEncoder())),
+                ('numerical_imputer',
+                 TransformerWrapper(exclude=None,
+                                    include=['0', '1', '2', '3', '4', '5', '6',
+                                             '7', '8', '9', '10', '11', '12',
+                                             '14', '15'],
+                                    transformer=SimpleImputer(add_indi...
+                 TransformerWrapper(exclude=None, include=[],
+                                    transformer=SimpleImputer(add_indicator=False,
+                                                              copy=True,
+                                                              fill_value=None,
+                                                              keep_empty_features=False,
+                                                              missing_values=nan,
+                                                              strategy='most_frequent',
+                                                              verbose='deprecated'))),
+                ('trained_model',
+                 KNeighborsClassifier(algorithm='auto', leaf_size=30,
+                                      metric='minkowski', metric_params=None,
+                                      n_jobs=-1, n_neighbors=12, p=2,
+                                      weights='distance'))],
+         verbose=False)
+2023-03-31 19:30:38,892:INFO:save_model() successfully completed......................................
+2023-03-31 19:30:39,172:INFO:Initializing load_model()
+2023-03-31 19:30:39,173:INFO:load_model(model_name=best_model, platform=None, authentication=None, verbose=True)
