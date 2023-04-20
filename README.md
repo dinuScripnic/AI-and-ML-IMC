@@ -88,6 +88,31 @@
     * Inconsistent data
 * Feature selection
 * Feature engineering
+
+<TODO: do this>
+
+#### Corelation Analysis
+#### Feature Selection
+1. Add a random variable
+```python
+import numpy as np
+import pandas as pd
+df = pd.read_csv('data.csv')
+df['random'] = np.random.randint(0, 100, df.shape[0])
+```
+2. Run a random forest without any hyperparameter tuning
+```python
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier()
+rf.fit(df.drop('target', axis=1), df['target'])
+```
+3. Calculate the feature importance
+```python
+importance = pd.DataFrame({'feature': df.drop('target', axis=1).columns, 'importance': rf.feature_importances_})
+importance.sort_values('importance', ascending=False)
+print(importance)
+```
+4. Drop all the features that importance less then random variable
 ### 4. Data Splitting
 * Splitting the data into 2 or 3 sets
     * Training set and test set
@@ -143,7 +168,7 @@
     * 80/10/10
     * 50/25/25
 ---
-## 4. Supervised Learning Algorithms
+## 4.1 Supervised Learning Algorithms
 ### Linear based algorithms
 #### Linear Regression
 <img src="./Imgs/LR.png">
@@ -603,6 +628,69 @@ y_pred = model.predict(X_test)
 model <- kNN(y ~ x1 + x2 + ... + xn, data=data, k=5)
 y_pred <- predict(model, X_test)
 ```
+---
+## 4.2 Unsupervised Learning Algorithms
+### Introduction
+* Goal is to find patterns in the data
+* Identify relationships between variables and group similar observations together based on their features.
+* More diffiecult to evaluate the performance of the model
+
+### Clustering
+<img src="./Imgs/clustering.png">
+
+* Cluster analysis is a method of unsupervised machine learning
+* GIven a set of data points we should find natural grouping among the observations
+* Optimal Clustering should
+    * Minimize the intra-cluster distance (distinctivness)
+    * Maximize the inter-cluster distance (cohesiveness)
+
+#### Clustering Pipeline
+1. Problem Definition
+2. Select a similarity metric
+3. Select a clustering algorithm
+4. Decide the number of clusters
+5. Interpret the clusters
+6. Assess the clusters
+
+#### Types of Clustering
+* Partitional Clustering
+    * Construct various partitions of the data
+    * Evaluate them by some criteria
+    * K-Means
+* Hierarchical Clustering
+    * Construct a hierarchy of clusters
+    * Evaluate them by some criteria
+    * Diana, Agnes
+* Density-Based Clustering
+    * Construct clusters based on density and connectivity
+    * Evaluate them by some criteria
+    * DBSCAN, OPTICS
+#### Hard vs Soft Clustering
+* Hard Clustering
+    * Each data point belongs to only one cluster
+* Soft Clustering
+    * Each data point belongs to all clusters with different probabilities
+
+#### K-Means Clustering
+##### Principles
+* Pick a K based on your understanding of the domain
+* Run K-Means with K
+* Evaluate the clusters
+* Repeat the process with different Ks
+    * If single clusters contain different entities, increase K
+    * If entities are spread across multiple clusters, decrease K
+    * Or try multiple values of K and pick the one that maximises the performance metric
+##### Considerations
+* The objective of k-means is to minimize the sum if squared distances between the data points and their cluster centers
+* k-means algorithm converges to a local optimum
+* Results can vary based on random seed selection
+* Finding the global optimum is NP-hard
+##### Advantages
+##### Disadvantages
+* Sensitivity to outliers
+* Needs an initial guess of K
+* Result depend on the initial seed
+* Only applicable for continous n-dimentional space
 
 ---
 ## 5. Hyperparameters Tuning
