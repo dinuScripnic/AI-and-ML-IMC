@@ -53,3 +53,23 @@ plot_ly(data = dt_newimg,
   layout(yaxis = list(autorange = "reversed", scaleanchor = "x", scaleratio = 1))
 fviz_cluster(km, data = dt_rgb) # if there are more than 2 dim, it uses PCA
 ```
+## 3.2 Drilling data
+### 3.2.1 Load the data
+```{R}
+data <- read.csv("./drilling.csv")
+summary(data)
+# do a scatterplot 
+plot(data$x, data$y, type="p")
+```
+### 3.2.2 K-means clustering
+```{R}
+wss <- sapply(1:10, function(k) kmeans(data, k)$tot.withinss)
+plot(1:10, wss, type = "b", xlab = "Number of clusters", ylab = "Within-cluster sum of squares")
+```
+#### Conclusion
+* The optimal number of clusters is 4
+```{R}
+best_k <- 4
+kmeans_model <- kmeans(data, centers = best_k)
+plot(data$x, data$y, type="p", color = kmeans_model$cluster)
+```
