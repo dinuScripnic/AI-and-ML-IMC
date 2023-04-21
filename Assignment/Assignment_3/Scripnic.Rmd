@@ -1,0 +1,55 @@
+# Assignment 3
+&copy; 2023, Scripnic Dinu, all rights reserved
+## 3.1 Mobile phone picture
+```{R}
+# set working directory to the location of the script
+if (rstudioapi::isAvailable()) {
+  setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+}
+# load libraries
+install.packages("magick")
+library(data.table)
+library(magick)
+library(cluster) 
+library(imager)
+library(ggplot2)
+```
+
+## 3.1 Mobile phone picture
+### 3.1.1 
+* Take a picture with your smartphone. The picture must contain a piece of paper with your name on it and 
+some type of background (walls, floor, window, etc.).
+* Resize it to a manageable size (e.g., 256x256) either with R or Py
+```{R}
+img <- imager::load.image("./img.jpg")
+img <- imager::resize(img, size_x = 256, size_y = 256)
+plot(img)
+pixels <- as.data.frame(img, wide="c")
+setDT(pixels)
+```
+### 3.1.2
+* Reduce the number of RGB colors in the image by using the k-means algorithm.
+```{R}
+wss <- sapply(1:10, function(k) kmeans(pixels, k)$tot.withinss)
+plot(1:10, wss, type = "b", xlab = "Number of clusters", ylab = "Within-cluster sum of squares")
+```
+#### Conclusion
+* The optimal number of clusters is 4
+```{R}
+best_k <- 4
+kmeans_model <- kmeans(pixels, centers = best_k)
+dt_newimg <- data.table(
+  x = pixels[, x],
+  y = pixels[, y],
+  R = km$centers[km$cluster, "c.1"],
+  G = km$centers[km$cluster, "c.2"],
+  B = km$centers[km$cluster, "c.3"])
+plot_ly(data = dt_newimg,
+        x = ~x,
+        y = ~y,
+        type = "scattergl",
+        mode = "markers",
+        marker = list(color = ~rgb(R, G, B))) |>
+  layout(yaxis = list(autorange = "reversed", scaleanchor = "x", scaleratio = 1))
+fviz_cluster(km, data = dt_rgb) # if there are more than 2 dim, it uses PCA
+```

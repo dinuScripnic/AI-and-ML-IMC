@@ -639,7 +639,7 @@ y_pred <- predict(model, X_test)
 <img src="./Imgs/clustering.png">
 
 * Cluster analysis is a method of unsupervised machine learning
-* GIven a set of data points we should find natural grouping among the observations
+* Given a set of data points we should find natural grouping among the observations
 * Optimal Clustering should
     * Minimize the intra-cluster distance (distinctivness)
     * Maximize the inter-cluster distance (cohesiveness)
@@ -651,7 +651,6 @@ y_pred <- predict(model, X_test)
 4. Decide the number of clusters
 5. Interpret the clusters
 6. Assess the clusters
-
 #### Types of Clustering
 * Partitional Clustering
     * Construct various partitions of the data
@@ -670,7 +669,6 @@ y_pred <- predict(model, X_test)
     * Each data point belongs to only one cluster
 * Soft Clustering
     * Each data point belongs to all clusters with different probabilities
-
 #### K-Means Clustering
 ##### Principles
 * Pick a K based on your understanding of the domain
@@ -686,13 +684,48 @@ y_pred <- predict(model, X_test)
 * Results can vary based on random seed selection
 * Finding the global optimum is NP-hard
 ##### Advantages
+* Simple to implement
+* Fast and efficient
+* Works well with high dimensional data
+* Requires few hyperparameters
+* Scalable
 ##### Disadvantages
 * Sensitivity to outliers
 * Needs an initial guess of K
 * Result depend on the initial seed
 * Only applicable for continous n-dimentional space
 
+##### Quality Evaluation 
+<img src="./Imgs/Elbow.png">
+
+* Elbow Method
+    * Plot the sum of squared distances of samples to their closest cluster center vs. the number of clusters
+    * The optimal number of clusters is where the "elbow" occurs
+    * The sum of squared distances decreases as the number of clusters increases
+    * The elbow is the point where the sum of squared distances starts to decrease more slowly
+
+* Silhouete coefficient
+    * Measure of how similar an object is to its own cluster (cohesion) compared to other clusters (separation).
+    * Measures the distance to all the other points in the cluster and the distance to all the points in the next nearest cluster
+    * a+b / max(a,b)
+
+##### Python Implementation
+```python
+from sklearn.cluster import KMeans
+model = KMeans(n_clusters=5, random_state=0)
+model.fit(X)
+centroids = model.cluster_centers_
+labels = model.labels_
+
+```
+##### R Implementation
+```R
+model <- kmeans(x, centers=5, nstart=20)
+centers <- model$centers
+labels <- model$cluster
+```
 ---
+
 ## 5. Hyperparameters Tuning
 ### Grid Search
 #### Principles
