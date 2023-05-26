@@ -7,12 +7,15 @@ if (rstudioapi::isAvailable()) {
   setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 }
 # load libraries
-install.packages("magick")
 library(data.table)
 library(magick)
 library(cluster) 
 library(imager)
-library(ggplot2)
+library(plotly)
+library(dbscan)
+library(FNN)
+
+
 ```
 
 ## 3.1 Mobile phone picture
@@ -33,17 +36,18 @@ setDT(pixels)
 wss <- sapply(1:10, function(k) kmeans(pixels, k)$tot.withinss)
 plot(1:10, wss, type = "b", xlab = "Number of clusters", ylab = "Within-cluster sum of squares")
 ```
-#### Conclusion
+### Conclusion
 * The optimal number of clusters is 4
 ```{R}
 best_k <- 4
-kmeans_model <- kmeans(pixels, centers = best_k)
+km <- kmeans(pixels, centers = best_k, nstart = 20)
 dt_newimg <- data.table(
   x = pixels[, x],
   y = pixels[, y],
   R = km$centers[km$cluster, "c.1"],
   G = km$centers[km$cluster, "c.2"],
   B = km$centers[km$cluster, "c.3"])
+
 plot_ly(data = dt_newimg,
         x = ~x,
         y = ~y,
@@ -51,7 +55,8 @@ plot_ly(data = dt_newimg,
         mode = "markers",
         marker = list(color = ~rgb(R, G, B))) |>
   layout(yaxis = list(autorange = "reversed", scaleanchor = "x", scaleratio = 1))
-fviz_cluster(km, data = dt_rgb) # if there are more than 2 dim, it uses PCA
+
+
 ```
 ## 3.2 Drilling data
 ### 3.2.1 Load the data
@@ -60,16 +65,87 @@ data <- read.csv("./drilling.csv")
 summary(data)
 # do a scatterplot 
 plot(data$x, data$y, type="p")
+# feedData is columns x and y
+feedData <- data[, c("x", "y")]
 ```
+
 ### 3.2.2 K-means clustering
+
 ```{R}
-wss <- sapply(1:10, function(k) kmeans(data, k)$tot.withinss)
+wss <- sapply(1:10, function(k) kmeans(feedData, k)$tot.withinss)
 plot(1:10, wss, type = "b", xlab = "Number of clusters", ylab = "Within-cluster sum of squares")
 ```
-#### Conclusion
+
+### Conclusion
 * The optimal number of clusters is 4
+
 ```{R}
 best_k <- 4
-kmeans_model <- kmeans(data, centers = best_k)
-plot(data$x, data$y, type="p", color = kmeans_model$cluster)
+kmeans_model <- kmeans(feedData, centers = best_k)
+# add the cluster to the data
+data$kmeans_cluster <- kmeans_model$cluster
+plot(data$x, data$y, type="p", col=data$kmeans_cluster)
+```
+
+### 3.2.3 Hierarchical clustering
+
+```{R}
+# library agnes
+linkage_methods <- c("average", "single", "complete", "ward")
+hcl <- list()
+for (linkage in linkage_methods) {
+  hcl[[linkage]] <- agnes(feedData, method = linkage)
+}
+plot(hcl$average, which.plots = 2, main = "Average linkage")
+plot(hcl$single, which.plots = 2, main = "Single linkage")
+plot(hcl$complete, which.plots = 2, main = "Complete linkage")
+plot(hcl$ward, which.plots = 2, main = "Ward linkage")
+```
+
+* We can see that the best linkage method is ward
+
+```{R}
+best_linkage <- "ward"
+hcl_model <- agnes(feedData, method = best_linkage)
+plot(hcl$ward, which.plots = 2, main = "Ward linkage")
+
+abline(h = 1.5, col = "red", lwd = 3)
+# we can cut at 1.5 to have 4 clusters
+tree <- cutree(hcl_model, k=4)
+data$hcl_cluster <- tree
+plot(data$x, data$y, type="p", col=data$hcl_cluster)
+```
+
+
+### 3.2.4 DBSCAN
+* First we have to find the best minPts and eps
+* Best minPts is 4 because we have 2 dimensions
+* To find the best eps we have to:
+  1. Get the distance using KNN
+  2. Plot the distances in an ascending order
+  3. Identify the value where the curve has the biggest change
+  
+```{R}
+# download the library
+library(FNN)
+minPts <- 4
+# 1. Get the distance using KNN
+knn_dist <- knn.dist(feedData, k = minPts)
+# 2. Sort the distances in an ascending order
+knn_dist <- sort(knn_dist, decreasing = FALSE)
+# 3. Plot the distances
+plot(knn_dist)
+# deaw a line at eps = 0.06, very thick
+abline(h = 0.06, col = "red", lwd = 3)
+# 4. Identify the value where the curve has the biggest change
+eps <- 0.06
+```
+
+* Now we can run the DBSCAN algorithm
+
+```{R}
+library(dbscan)
+dbscan_model <- dbscan(feedData, eps = eps, minPts = minPts)
+data$dbscan_cluster <- dbscan_model$cluster
+plot(data$x, data$y, type="p", col=data$dbscan_cluster)
 ```

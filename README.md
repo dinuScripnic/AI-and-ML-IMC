@@ -724,6 +724,244 @@ model <- kmeans(x, centers=5, nstart=20)
 centers <- model$centers
 labels <- model$cluster
 ```
+#### Hierarchical Clustering
+##### Principles
+
+##### Types
+<img src="./Imgs/aglomerativeVSdivisive.png">
+
+* Agglomerative
+    * Bottom-up approach
+    * Each observation starts in its own cluster
+    * Find the best pair to merge into new cluster
+    * Repeat until all observations are in one cluster
+    * Most common method
+* Divisive  
+    * Top-down approach
+    * All observations start in one cluster
+    * Pairs of clusters are split as one moves down the hierarchy
+    * Choose the best division 
+    * Operate recursively until each observation is in its own cluster
+
+##### Linkage Methods
+###### Single Linkage
+* Distance between two clossest objects in 2 clusters
+* Advantage
+    * Can handle clusters of different sizes
+* Disadvantage
+    * It is sensitive to outliers
+###### Complete Linkage
+* Distance between two farthest objects in 2 clusters
+* Advantage
+    * Less sensitive to outliers
+* Disadvantage
+    * Creates large clusters
+###### Average Linkage
+* Average distance between all the pairs of objects in 2 clusters
+###### Ward Linkage
+* Distance between two clusters and the centroid of the new cluster
+##### DendoGram
+* Dendrogram is a tree-like diagram that records the sequences of merges or splits
+* It records the history of merges and splits
+* Horizontal lines represent clusters that are merged
+* the position of the vertical lines represent the distance between the clusters
+* Cut the dendrogram at the desired height to get the desired number of clusters
+* Cut at the big jump in the height to get the optimal number of clusters
+* A line on the right with very low number of objects represents a outlier
+#### Density-Based Clustering
+##### Principles
+* **Density-based clustering** algorithms identify clusters based on the density of the data points
+* **Eps** is the radius of the neighborhood
+* **MinPts** is the minimum number of points in the neighborhood
+* **Core points** are data points that are in dense regions of the data space and have at least m points within a distance Eps
+* **Direct Density** reachable points are points that are within a distance Eps of a core point
+* **Density** reachable points are points that are within a distance Eps of a direct density reachable point
+* **Density Based clusters** are maximal sets of density reachable points
+##### Advantages
+* Discover clusters of arbitrary shape
+* Handle noise and outliers
+* No need of initial guess of K
+##### Disadvantages
+* Requires tuning of hyperparameters
+##### Determination of MinPts and Eps
+<img src="./Imgs/EpsMinPts.jpg">
+
+* MinPts
+    * The minimum number of points in a cluster
+    * MinPts ~= 2 * num_features
+    * MinPts >= num_features + 1
+    * MinPts = 1 is doesn't make sense
+* Eps
+    * Claculate the distance between each point and its kth nearest neighbor
+    * Sort the distances in ascending order
+    * eps is where the distance starts to increase rapidly
+##### Python Implementation
+```python
+from sklearn.cluster import DBSCAN
+model = DBSCAN(eps=0.3, min_samples=10)
+model.fit(X)
+labels = model.labels_
+```
+##### R Implementation
+```R
+model <- dbscan(x, eps=0.3, minPts=10)
+labels <- model$cluster
+```
+
+---
+## 4.3 Neural Networks
+### Perceptron
+<img src="./Imgs/NN perceptron.png">
+
+* Perceptron is a single layer neural network
+* Formula output = non-linear activation function (sum(weight * input) + bias)
+
+### Multi-Layer Perceptron
+<img src="./Imgs/NN MLP.png">
+
+* Multi-Layer Perceptron is a neural network with multiple layers
+* Each layer is a perceptron
+
+#### Activation Functions
+##### Sigmoid
+* sigmoid(x) = 1 / (1 + e^-x)
+* Output range is between 0 and 1
+* Used for binary classification
+* Not used for hidden layers
+* Derivative is not zero-centered
+* suffers from vanishing gradient problem
+
+##### Tanh
+* tanh(x) = e^x - e^-x / e^x + e^-x
+* Output range is between -1 and 1
+* Used for binary classification
+* Not used for hidden layers
+* Derivative is zero-centered
+* suffers from vanishing gradient problem
+
+##### ReLU
+* ReLU(x) = max(0, x)
+* Output range is between 0 and infinity
+* Used for hidden layers
+* Derivative is zero-centered
+* Does not suffer from vanishing gradient problem
+* Suffers from dying ReLU problem
+
+### Training
+#### Objective 
+* Minimize the loss function
+* Identify the best weights and biases such that output is as close as possible to the ground truth
+* Loss function is the difference between the predicted value and the actual value
+#### Loss Function
+* Mean Squared Error (MSE) - used for regression
+    * L = 1/n * sum((y_pred - y_true)^2)
+* Cross Entropy - used for classification
+    * L = -1/n * sum(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
+#### Learning Rate
+* Learning rate is the step size in the gradient descent algorithm
+* Learning rate is a hyperparameter
+* Learning rate is a trade-off between accuracy and speed
+* Learning rate is usually between 0.0001 and 1
+* If the learning rate is too small, the model will get stuck in a local minima
+* If the learning rate is too large, the model will overshoot the global minima
+
+---
+## 4.4 Deep Learning
+### Why?
+* Reduces the number of neurons
+* Faster convergence
+
+### Convolutional Neural Networks
+* CNN are superior in image classification
+* Specialized for grid-like data
+    * Images
+    * Equidisant time series
+    * Video Data
+* Particualrly well suited to extract features from original imput
+
+#### Convolutional Layer
+* Sliding dot product (cross-correlation)
+* Each kernel is defined by its width and height
+* n_parameters = (width * height + 1) * num_kernels
+* This parameters are then subject to the optimization
+
+#### Multi-Input channel convolution
+* Each channel needs a corresponding 2D kernel
+* Cross-correlation is calculated by summing over 2 dimentional cross-correlation of each channel
+
+#### Hyperparameters
+* Kernel size
+    * Single integer for the same hight and width
+    * Tuple for different hight and width
+* Stride
+    * Number of poxels we skip when moving the convolutional window
+    * Tuple (x-axis, y-axis)
+* Padding
+    * Nr of pixels that are added to the input image
+    * Single or tuple
+
+#### Pooling Layer
+* Pooling is used to further reduce the number of parameters
+* Pooling operations
+    * Max pooling
+    * Average pooling
+    * Min pooling
+
+#### Advantages
+* Leadnig method in computer vision
+* No supervision needed
+* Less parameters needed compared to deep feedforward 
+
+#### Disadvantages
+* Flattening of the data - lose info about the position of the object
+* Needs a large amount of data
+
+### Transfer Learning
+#### Motivation
+* Apply knowledge optained from solved problems to solve new problems
+* Less data needed
+* Less training time
+#### FineTuning CNN
+* Instead of randomly initializing the  parameters we could use pre-trained parameters
+* Train these parameters to better fit the new problem
+#### CNN as feature extractor
+* Assume convolutional layers extracted helpful features for previous problems
+* Fix pre-trained parameters in the convolutional layers and train a feedforward network on the flattened output
+#### Advantages
+* Handle small sample size
+* Faster convergence
+* Take advantage of models trained on large datasets
+#### Disadvantages
+* Model size is large
+* Poor performance if the new data is very different from the original data
+* Constrains in terms of architecture
+### Recurrent Neural Networks
+#### Motivation
+* Class of artificial neural networks that exhibit a temporal dynamic behavior
+* TIme series data
+* Speech recognition
+* Stock market prediction
+* Natural language processing
+#### Advantages
+* No fixed input/output size needed
+* Memories previous observations
+* Can be used to model time-series/sequence data
+* Models long AND short time behavior
+#### Cons
+* Slow in training
+* Easy overfitting
+* Sensitive to parameter initializations
+
+### Autoencoders
+#### Motivation
+* Unsupervised learning approach
+* Predict X from X
+* Learns a lower dimensional representation of the data
+#### Applications
+* Information retrieval
+* Dimensionality reduction
+* Anomaly detection
+
 ---
 
 ## 5. Hyperparameters Tuning
